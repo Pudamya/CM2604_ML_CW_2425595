@@ -1,10 +1,99 @@
 # Telco Customer Churn Prediction
 
-## Overview
+## 📌 Overview
 This repository contains the coursework implementation for **CM2604: Machine Learning**. 
-The goal of this project is to develop a binary classification model to predict whether a telecommunications customer will "churn" (cancel their service) based on various customer attributes.
 
-## Dataset
-The dataset used is the **Telco Customer Churn** dataset from Kaggle.
+The goal of this project is to develop a binary classification model to predict whether a telecommunications customer will "churn" (cancel their service) based on various customer attributes. The project explores the end-to-end Machine Learning pipeline, from exploratory data analysis and feature engineering to model optimization using Decision Trees and Artificial Neural Networks (ANN).
+
+## 📂 Dataset
+The dataset used is the **Telco Customer Churn** dataset.
 * **Source:** [Kaggle - Telco Customer Churn](https://www.kaggle.com/blastchar/telco-customer-churn)
-* **Attributes:** Includes customer demographics, account information, and service details (e.g., Contract type, Monthly Charges, Tenure).
+* **Description:** The data contains 7,043 rows (customers) and 21 columns (features).
+* **Key Attributes:**
+  * **Demographics:** Gender, Senior Citizen, Partner, Dependents.
+  * **Services:** Phone, Internet (DSL/Fiber), Streaming, Tech Support.
+  * **Account:** Contract type (Month-to-month/Yearly), Payment Method, Monthly Charges, Tenure.
+
+## 🛠️ Tech Stack & Libraries
+The project is implemented in Python using the following libraries:
+* **Data Manipulation:** `pandas`, `numpy`
+* **Visualization:** `seaborn`, `matplotlib`
+* **Machine Learning:** `scikit-learn` (Decision Trees, GridSearch, Metrics, Preprocessing)
+* **Deep Learning:** `tensorflow`, `keras` (Neural Networks)
+* **Imbalance Handling:** `imblearn` (SMOTE)
+
+## ⚙️ Methodology
+
+### 1. Data Preprocessing & Feature Engineering
+* **Cleaning:** Handled missing values in `TotalCharges` (imputed with median) and removed `customerID`.
+* **Encoding:** Mapped binary variables (Yes/No) to 0/1 and used One-Hot Encoding for categorical features.
+* **Feature Engineering:** 
+  * Created `tenure_group` bins.
+  * Generated `Log_TotalCharges` and `Log_MonthlyCharges` to handle skewness.
+  * Created interaction features like `total_services` and ratio features.
+* **Normalization:** Applied `StandardScaler` to numerical features.
+
+### 2. Exploratory Data Analysis (EDA)
+* Identified class imbalance (26.5% Churn vs 73.5% Retention).
+* Analyzed churn rates across categorical variables (e.g., Contract types, Internet Service).
+* Visualized correlations and numerical distributions using KDE plots, Violin plots, and Heatmaps.
+
+### 3. Model Development
+We implemented and compared four specific models:
+1.  **Baseline Decision Tree:** Default parameters with Class Weights.
+2.  **Tuned Decision Tree:** Optimized using `GridSearchCV` (Max Depth, Min Samples Leaf).
+3.  **Baseline Neural Network:** Simple dense architecture trained on SMOTE-oversampled data.
+4.  **Tuned Neural Network (Best Model):** 
+    *   Architecture: 3 Hidden Layers, Swish Activation, Dropout, L2 Regularization.
+    *   Optimization: Adam Optimizer with Learning Rate Decay.
+    *   Strategy: Used **Class Weights** instead of SMOTE for better probability calibration.
+    *   Threshold Tuning: Optimized classification threshold using **F2-Score** to prioritize Recall.
+
+## 📊 Results & Key Findings
+
+### Model Leaderboard
+The **Tuned Neural Network** was identified as the superior model based on ROC-AUC and stability.
+
+| Model | Accuracy | Recall | F1 Score | ROC-AUC |
+| :--- | :--- | :--- | :--- | :--- |
+| **NN Tuned (Best)** | **~78.5%** | **~0.78*** | **~0.63** | **0.84** |
+| DT Tuned | ~76.0% | ~0.78 | 0.63 | 0.83 |
+| NN Baseline | ~75.0% | ~0.71 | 0.60 | 0.81 |
+| DT Baseline | ~73.3% | ~0.49 | 0.49 | 0.65 |
+
+*Note: Recall for NN Tuned depends on the final threshold selected (F1 vs F2 optimization).*
+
+### Business Insights
+1.  **Contract Sensitivity:** Customers on **Month-to-month contracts** are the highest risk group (approx. 43% churn rate).
+2.  **Price Sensitivity:** There is a "Danger Zone" where new customers (0-12 months) paying high monthly fees (>$70) are extremely likely to churn.
+3.  **Service Quality:** **Fiber Optic** users churn significantly more than DSL users, suggesting potential dissatisfaction with price-to-value or technical reliability.
+
+## 🚀 How to Run
+
+1.  **Clone the repository:**
+    ```bash
+    git clone <repository-url>
+    ```
+2.  **Install requirements:**
+    ```bash
+    pip install pandas numpy seaborn matplotlib scikit-learn tensorflow imbalanced-learn
+    ```
+3.  **Run Preprocessing:**
+    *   Open `pre_processing.ipynb`.
+    *   Run all cells. This creates the `preprocessed_dataset/preprocessed_data.csv` file.
+4.  **Run Modeling:**
+    *   Open `Neural_Network_&_Decision_Tree.ipynb`.
+    *   Run all cells to train models and generate evaluation graphs.
+
+## 📂 Project Structure
+├── data/
+│ └── Telco-Customer-Churn.csv # Raw Dataset
+├── preprocessed_dataset/
+│ └── preprocessed_data.csv # Generated by pre_processing.ipynb
+├── pre_processing.ipynb # EDA, Cleaning, Feature Engineering
+├── Neural_Network_&_Decision_Tree.ipynb # Model Training & Evaluation
+└── README.md # Project Documentation
+
+## 👥 Author
+**Pudamya Rathnayake/2425595**  
+Module: CM2604 - Machine Learning
